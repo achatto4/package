@@ -1,0 +1,25 @@
+Package: Anaghpackage
+Title: Returns some trigonometric functions and the confidence interval of the sample mean
+Version: 0.0.0.9000
+Authors@R: 
+    person(given = "Anagh",
+           family = "Chattopadhyay",
+           role = c("aut", "cre"),
+           email = "achatto4@jhu.edu")
+Description: This package Returns some trigonometric functions and the confidence interval of the sample mean
+Imports: ggplot2, 
+          usethis,dplyr,
+  forcats, 
+  lubridate,
+  tidyr,
+  stats,
+  tidytuesdayR,
+  rmarkdown
+License: GPL (>= 3)
+Encoding: UTF-8
+LazyData: true
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+Suggests: 
+    knitr
+VignetteBuilder: knitr

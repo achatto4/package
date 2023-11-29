@@ -1,0 +1,197 @@
+---
+title: "How to do stuff"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{How to do stuff}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+3C We look at the behavior of the cos values of our package and that of the actual cos value. Although the initial approximations for k=1 to 5 are not that good, our approximations k>6 are much better.
+
+```{r setup cos}
+library(Anaghpackage)
+library(ggplot2)
+# Generate x values
+x_values <- seq(0, 10, length.out = 100)
+
+# Generate y values for cos(x)
+cos_y_values <- cos(x_values)
+
+# Create a data frame for ggplot
+data <- data.frame(x = x_values, cos_x = cos_y_values)
+
+# Create a ggplot with cos(x) as points
+p <- ggplot(data, aes(x = x, y = cos_x)) +
+  geom_point(shape = 1, size = 3, color = "black") +
+  labs(x = "x", y = "y", title = "Comparison of fn_cos(x, k) and cos(x)") +
+  theme_minimal()
+
+p
+
+# Add lines for fn_cos(x, k) for different values of k
+k_values <- c(1, 3, 5, 7, 9)
+for (k in k_values) {
+  fn_cos_y_values <- sapply(x_values, function(x) fn_cos(x, k))
+  data1 <- cbind(data, fn_cos_y_values)
+  p <- p + geom_line(data = data1, aes(x = x, y = fn_cos_y_values),  color = sample(colors(), 1))
+}
+
+p
+```
+
+3D We look at the behavior of the sine values of our package and that of the actual sine value. Although the initial approximations for k=1 to 5 are not that good, our approximations k>6 are much better.
+
+```{r setup sin}
+library(Anaghpackage)
+library(ggplot2)
+# Generate x values
+x_values <- seq(0, 10, length.out = 100)
+
+# Generate y values for cos(x)
+sin_y_values <- sin(x_values)
+
+# Create a data frame for ggplot
+data <- data.frame(x = x_values, sin_x = sin_y_values)
+
+# Create a ggplot with sin(x) as points
+p <- ggplot(data, aes(x = x, y = sin_x)) +
+  geom_point(shape = 1, size = 3, color = "black") +
+  labs(x = "x", y = "y", title = "Comparison of fun_sin(x, k) and sin(x)") +
+  theme_minimal()
+
+p
+
+# Add lines for fn_sin(x, k) for different values of k
+k_values <- c(1, 3, 5, 7, 9)
+for (k in k_values) {
+  fn_sin_y_values <- sapply(x_values, function(x) fun_sin(x, k))
+  data1 <- cbind(data, fn_sin_y_values)
+  p <- p + geom_line(data = data1, aes(x = x, y = fn_sin_y_values),  color = sample(colors(), 1))
+}
+
+p
+```
+
+3E
+
+The dataset we are describing is related to Deepsha Menghani's talk on Data Viz animation and interactivity in Quarto. Deepsha watched each episode of the TV show "Ted Lasso" at 2X speed, meticulously noting down every instance of the expletive (F-bomb) and gesture references. She then compiled this information into the "richmondway" R package. The TV show "Ted Lasso" follows the story of Ted Lasso, an American college football coach who is hired to coach an English soccer team. The twist is that his hiring is with the secret intention that his inexperience will lead the team to failure. However, Ted's folksy and optimistic leadership style unexpectedly leads to success. The main character, Roy Kent, is initially the captain of AFC Richmond and later becomes one of the coaches. Roy is characterized as a man of few words, and in the early seasons, he frequently uses the expletive in various moods such as anger, sadness, happiness, amusement, love, surprise, thoughtfulness, and joy.
+
+The dataset itself includes information on the number, percentage, and context of the expletive used in each episode of "Ted Lasso." This data provides insights into the frequency and emotional context of the usage of the particular expletive throughout the show.
+
+The data dictionary can be found at the link- \url{https://github.com/rfordatascience/tidytuesday/blob/master/data/2023/2023-09-26/readme.md}
+
+```{r setup calculate_CI}
+library(Anaghpackage)
+library(tidytuesdayR)
+
+#install.packages("tidytuesdayR")
+
+ tuesdata <- tidytuesdayR::tt_load('2023-09-26')
+ # ## OR
+ # tuesdata <- tidytuesdayR::tt_load(2023, week = 39)
+
+ richmondway <- tuesdata$richmondway
+
+     # dir.create("data")
+     # 
+     # saveRDS(richmondway, file = "data/richmondway.RDS")
+    
+    #my_data <- readRDS("~Anaghpackage/data/richmondway.RDS")
+     
+    my_data= richmondway
+```
+
+```{r Data Visualization}
+
+#read the dataset
+library(dplyr)
+library(lubridate, warn.conflicts = FALSE)
+library(forcats)
+library(tidyr)
+
+# We summarise the data and get a glimpse of the data set using the two functions below respectively.
+summarise(my_data)
+glimpse(my_data)
+
+#This functions counts the numbers of unique value corresonding to the dataset, and it helps us understand the presense of any repetitions.
+count(my_data)
+
+#We use the distinct function to find dstinct value in the data, and convert the data structure to tibble for better operationality.
+my_data_new=distinct(my_data)
+my_data_new=as_tibble(my_data_new)
+my_data_new=arrange(my_data_new)
+
+#We also find the current time to be able to understand the date till which the analysis is valid. The analysis might not be valid at a future date.
+Sys.timezone()
+
+now(tzone = "America/New_York")
+```
+
+We firstly look at the progression of f-counts as the seasons progress. We can see that there has been an increase as the seasons progressed.
+```{r plot 1}
+ggplot(my_data_new, aes(x = Season_Episode, y = F_count_RK, group=1)) +
+  geom_point() +  geom_line() +
+  labs(
+    title = "Season vs F-word count distribution",
+    subtitle = "For Roy Kent",
+    caption = "Data source: Tidytuesday"
+  )
+
+```
+
+We also looked at the relationship between f-counts with the IMDB ratings of the episode. Funnily, the there is a tendency of episodes with more f-swears to be higher rated on IMDB!
+
+```{r plot 2}
+
+ggplot(my_data_new, aes(x= Imdb_rating, y=F_count_RK)) +
+  geom_point(data=my_data_new)+ labs(title = "ImdB rating vs F-word count distribution",
+              subtitle = "For Roy Kent",
+              caption = "Data source: Tidytuesday")
+
+
+
+```
+
+Finally we look at the effect of Roy's dating situation on his f-counts. It seems that he is more prone to swearing when he is not in a relationship, which is not a quite interesting to note! 
+```{r plot 3}
+ggplot(my_data_new, aes(x= Dating_flag, y=F_count_RK)) +
+  geom_boxplot(data=my_data_new)+ labs(title = "Dating flag vs F-word count distribution",
+              subtitle = "For Roy Kent",
+              caption = "Data source: Tidytuesday")
+
+```
+
+We now look at the 90% confidence interval for the number of f-words he uses per episode.
+```{r CI}
+c_CI=make_ci_class(my_data_new$F_count_RK)
+print(c_CI)
+calculate_CI.ci_class(c_CI)
+
+```
+We note that the  90% confidence interval for the number of f-words he uses per episode is (7.190318, 10.456741). This analysis demonstrates the effects of the various life-situations Roy faces and its effect on his tendency to use the f-words!
+
+
+Functions in specified packages used in the used-
+glimpse, 
+distinct,
+arrange,
+as_tibble,
+Sys.timezone,
+drop_na,
+summarise,
+count,
+now,
+
+We also used the following three different geom_* functions-
+geom_boxplot(),
+geom_point(),
+geom_line()
+
